@@ -15,15 +15,17 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.use(cors({
-	origin: ['https://matzipmap.kro.kr', 'http://localhost:5173'],
-	credentials: true,
-}));
+app.use(
+	cors({
+		origin: ['https://matzipmap.kro.kr', 'http://localhost:5173'],
+		credentials: true,
+	}),
+);
 
 // 라우터 설정
 app.use('/place-info', placeRouter);
 
-app.use('/oauth', oauthRouter)
+app.use('/oauth', oauthRouter);
 
 // 서버 시작
 app.listen(port, () => {
