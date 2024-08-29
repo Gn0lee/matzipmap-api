@@ -2,7 +2,9 @@ import { Router, Request, Response } from 'express';
 import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
 import { SupabaseClient } from '@supabase/supabase-js';
-import createClient from 'src/lib/supabase';
+import locateChrome from 'locate-chrome';
+
+import createClient from '@/lib/supabase';
 
 const router = Router();
 
@@ -59,11 +61,18 @@ const getCachedPlaceInfo = async (supabase: SupabaseClient, id: string): Promise
 };
 
 const crawlPlaceInfo = async (id: string): Promise<PlaceInfo> => {
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
+	const executablePath: string = (await new Promise(resolve => locateChrome((arg: any) => resolve(arg)))) || '';
+
+	const browser = await puppeteer.launch({
+		executablePath,
+		args: ['--no-sandbox', '--disable-setuid-sandbox'],
+	});
 
 	try {
+		const page = await browser.newPage();
+
 		const kakaoMapUrl = `https://place.map.kakao.com/m/${id}`;
+
 		await page.goto(kakaoMapUrl);
 
 		await page.waitForSelector('span[data-score]', { timeout: 60000 });

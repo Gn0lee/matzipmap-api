@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import createClient from 'src/lib/supabase';
+import createClient from '@/lib/supabase';
 
 const router = Router();
 

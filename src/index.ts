@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import placeRouter from 'src/routes/place';
-import oauthRouter from 'src/routes/oauth';
+import placeRouter from '@/routes/place';
+import oauthRouter from '@/routes/oauth';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
