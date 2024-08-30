@@ -29,15 +29,16 @@ jobs:
       - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v2'
 
+      - name: Copy docker-compose.yml to VM
+        run: |
+          gcloud compute scp docker-compose.yml ${{ env.GCE_INSTANCE }}:/home/jinho605/matzipmap/be --zone ${{ env.GCE_INSTANCE_ZONE }}
+
       - name: Deploy to GCE
         run: |
           gcloud compute ssh ${{ env.GCE_INSTANCE }} --zone ${{ env.GCE_INSTANCE_ZONE }} --command '
-            docker pull gn0lee/matzipmap-api:latest
-            docker stop matzipmap-be || true
-            docker rm matzipmap-be || true
-            docker run -d --name matzipmap-be \
-            -p 8080:8080 \
-            -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
-            -e SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            gn0lee/matzipmap-api:latest
+            cd /home/jinho605/matzipmap/be
+            echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+            echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+            docker-compose pull
+            docker-compose up -d --force-recreate
           '
