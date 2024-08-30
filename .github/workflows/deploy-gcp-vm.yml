@@ -1,0 +1,40 @@
+name: Deploy Docker to GCP VM
+
+on:
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCE_INSTANCE: ${{ secrets.GCE_INSTANCE }}
+  GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Deploy to GCE
+        run: |
+          gcloud compute ssh ${{ env.GCE_INSTANCE }} --zone ${{ env.GCE_INSTANCE_ZONE }} --command '
+            docker pull gn0lee/matzipmap-api:latest
+            docker stop matzipmap-be || true
+            docker rm matzipmap-be || true
+            docker run -d --name matzipmap-be \
+            -p 8080:8080 \
+            -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            -e SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            gn0lee/matzipmap-api:latest
+          '
