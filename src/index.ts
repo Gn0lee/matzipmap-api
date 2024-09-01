@@ -1,9 +1,11 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import placeRouter from '@/routes/place';
-import oauthRouter from '@/routes/oauth';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+
+import placeRouter from '@/routes/place';
+import oauthRouter from '@/routes/oauth';
+import userRouter from '@/routes/user';
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ app.use(
 app.use('/place-info', placeRouter);
 
 app.use('/oauth', oauthRouter);
+
+app.use('/user', userRouter);
 
 // 서버 시작
 app.listen(port, () => {
