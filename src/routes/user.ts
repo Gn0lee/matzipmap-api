@@ -1,12 +1,10 @@
 import { Router, Request, Response } from 'express';
-import createClient from '@/lib/supabase';
+import { getUser } from '@/common/user';
 
 const router = Router();
 
 router.get('/info', async (req: Request, res: Response) => {
-	const supabase = createClient({ req, res });
-
-	const { data, error } = await supabase.auth.getUser();
+	const { data, error } = await getUser(req, res);
 
 	if (error) {
 		return res.status(401).json({ message: error.message });

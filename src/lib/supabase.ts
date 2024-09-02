@@ -1,8 +1,9 @@
 import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr';
 import { Request, Response } from 'express';
+import { Database } from '@/types/database.types';
 
 const createClient = ({ req, res }: { res: Response; req: Request }) =>
-	createServerClient(process.env.SUPABASE_URL ?? '', process.env.SUPABASE_ANON_KEY ?? '', {
+	createServerClient<Database>(process.env.SUPABASE_URL ?? '', process.env.SUPABASE_ANON_KEY ?? '', {
 		cookies: {
 			getAll() {
 				return parseCookieHeader(req.headers.cookie ?? '');
