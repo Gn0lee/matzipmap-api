@@ -66,4 +66,47 @@ router.post('/', async (req: Request, res: Response) => {
 	return res.status(200).json({ data });
 });
 
+router.get('/list', async (req: Request, res: Response) => {
+	const supabase = createClient({ req, res });
+
+	const {
+		data: { user },
+		error: userError,
+	} = await getUser(req, res);
+
+	if (userError) {
+		return res.status(401).json({ message: userError.message });
+	}
+
+	if (!user) {
+		return res.status(401).json({ message: 'User not found' });
+	}
+
+	const { data: memberships, error } = await supabase
+		.from('user-group-memberships')
+		.select(
+			`
+        group_id,
+        groups:group_id (
+          id,
+          name,
+          description
+        )
+      `,
+		)
+		.eq('user_id', user.id);
+
+	if (error) {
+		return res.status(401).json({ message: 'Fail Fetch Groups' });
+	}
+
+	// 결과 포맷팅
+	const formattedGroups = memberships?.map(item => item.groups) || [];
+
+	return res.status(200).json({
+		message: 'success',
+		data: formattedGroups,
+	});
+});
+
 export default router;
