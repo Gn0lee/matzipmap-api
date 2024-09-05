@@ -153,18 +153,21 @@ export type Database = {
           group_id: string | null
           id: number
           joined_at: string
+          role: Database["public"]["Enums"]["MEMBERSHIP_ROLE"]
           user_id: string | null
         }
         Insert: {
           group_id?: string | null
           id?: number
           joined_at?: string
+          role?: Database["public"]["Enums"]["MEMBERSHIP_ROLE"]
           user_id?: string | null
         }
         Update: {
           group_id?: string | null
           id?: number
           joined_at?: string
+          role?: Database["public"]["Enums"]["MEMBERSHIP_ROLE"]
           user_id?: string | null
         }
         Relationships: [
@@ -221,7 +224,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      MEMBERSHIP_ROLE: "MEMBER" | "OWNER"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -57,7 +57,7 @@ router.post('/', async (req: Request, res: Response) => {
 	// 생성한 그룹에 사용자 추가
 	const { error: memberError } = await supabase
 		.from('user-group-memberships')
-		.insert({ group_id: data.id, user_id: user.id });
+		.insert({ group_id: data.id, user_id: user.id, role: 'OWNER' });
 
 	if (memberError) {
 		return res.status(500).json({ error: 'Failed to add user to group' });
