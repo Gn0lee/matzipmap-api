@@ -86,8 +86,9 @@ router.get('/list', async (req: Request, res: Response) => {
 		.from('user-group-memberships')
 		.select(
 			`
-        group_id,
-        groups:group_id (
+        id,
+        role,
+        groups(
           id,
           name,
           description
@@ -101,7 +102,13 @@ router.get('/list', async (req: Request, res: Response) => {
 	}
 
 	// 결과 포맷팅
-	const formattedGroups = memberships?.map(item => item.groups) || [];
+	const formattedGroups =
+		memberships?.map(item => ({
+			id: item.id,
+			group_id: item.groups?.id,
+			group_name: item.groups?.name,
+			group_description: item.groups?.description,
+		})) || [];
 
 	return res.status(200).json({
 		message: 'success',

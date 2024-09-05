@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import placeRouter from '@/routes/place';
 import oauthRouter from '@/routes/oauth';
 import userRouter from '@/routes/user';
+import groupRouter from '@/routes/group';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.use('/place-info', placeRouter);
 app.use('/oauth', oauthRouter);
 
 app.use('/user', userRouter);
+
+app.use('/group', groupRouter);
 
 // 서버 시작
 app.listen(port, () => {
