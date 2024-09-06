@@ -48,9 +48,13 @@ router.post('/', async (req: Request, res: Response) => {
 	}
 
 	// 그룹 생성
-	const { data, error } = await supabase.from('groups').insert({ name, description }).returns<{ id: string }>();
+	const { data, error } = await supabase.from('groups').insert({ name, description }).select().single();
 
-	if (error || !data) {
+	if (error && error.code === '23505') {
+		return res.status(400).json({ error: 'Group name already exists', code: 'G001' });
+	}
+
+	if (error) {
 		return res.status(500).json({ error: 'Failed to create group' });
 	}
 
@@ -86,14 +90,16 @@ router.get('/list', async (req: Request, res: Response) => {
 		.from('user-group-memberships')
 		.select(
 			`
-        id,
-        role,
-        groups(
-          id,
-          name,
-          description
-        )
-      `,
+    id,
+    role,
+    joined_at,
+    groups (
+      id,
+      name,
+      description,
+      created_at
+    )
+  `,
 		)
 		.eq('user_id', user.id);
 
@@ -108,6 +114,9 @@ router.get('/list', async (req: Request, res: Response) => {
 			group_id: item.groups?.id,
 			group_name: item.groups?.name,
 			group_description: item.groups?.description,
+			group_created_at: item.groups?.created_at,
+			role: item.role,
+			joined_at: item.joined_at,
 		})) || [];
 
 	return res.status(200).json({
